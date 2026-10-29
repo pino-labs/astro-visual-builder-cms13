@@ -1,0 +1,16 @@
+---
+import '@/styles/global.css';
+
+interface Props { title?: string; lang?: string }
+const { title = 'Astro on Optimizely CMS 13', lang = 'en' } = Astro.props;
+---
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body data-rendered={new Date().toISOString()}>
+    <slot />
+  </body>
+</html>

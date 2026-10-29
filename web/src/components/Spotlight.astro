@@ -1,0 +1,20 @@
+---
+import type { ContentProps } from '@optimizely/cms-sdk';
+import { getPreviewUtils } from '@optimizely/cms-sdk/core';
+import type { SpotlightContentType } from '@/lib/contentTypes';
+
+interface Props { content: ContentProps<typeof SpotlightContentType> }
+const { content } = Astro.props;
+const { pa, src } = getPreviewUtils(content);
+const image = src(content.image);
+const href = content.link?.url?.default;
+---
+<section class={`spotlight spotlight--image-${content.imageSide ?? 'left'}`}>
+  {image && <img src={image} alt="" loading="lazy" {...pa('image')} />}
+  <div class="spotlight__body">
+    {content.eyebrow && <p class="spotlight__eyebrow" {...pa('eyebrow')}>{content.eyebrow}</p>}
+    <h2 {...pa('heading')}>{content.heading}</h2>
+    {content.text && <p {...pa('text')}>{content.text}</p>}
+    {href && content.linkLabel && <a class="cta cta--primary" href={href} {...pa('linkLabel')}>{content.linkLabel}</a>}
+  </div>
+</section>

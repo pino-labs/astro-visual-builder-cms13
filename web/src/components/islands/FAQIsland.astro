@@ -1,0 +1,10 @@
+---
+import FAQ from '@/components/svelte/FAQ.svelte';
+
+const { content } = Astro.props;
+const items = (content.items ?? []).map((item: any) => ({
+  question: item?.question ?? '',
+  answerHtml: item?.answer?.html ?? '',
+}));
+---
+<FAQ client:visible heading={content.heading} items={items} />

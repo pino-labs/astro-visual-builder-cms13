@@ -1,0 +1,19 @@
+---
+import { planComposition, resolveContentComponent, isWrappedComponent, type ExperienceNode } from '@optimizely/cms-sdk/core';
+import { registry } from '@/lib/astroRegistry';
+
+interface Props { nodes: ExperienceNode[] }
+const { nodes } = Astro.props;
+const items = planComposition(nodes);
+---
+{items.map((item) => {
+  if (item.kind === 'unknown') return null;
+  const r = resolveContentComponent(item.content, { tag: item.tag, registry });
+  if (!r.component) return null;
+  const Component = r.component as any;
+  const props = { content: r.contentProps, displaySettings: item.displaySettings };
+  // A component node gets the preview wrapper; a section node carries its own data-epi-* attributes.
+  return isWrappedComponent(item)
+    ? <div {...(item.previewAttrs ?? {})}><Component {...props} /></div>
+    : <Component {...props} {...(item.previewAttrs ?? {})} />;
+})}

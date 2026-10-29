@@ -1,0 +1,7 @@
+Visual Builder without Next.js: Astro on Optimizely CMS 13 PaaS
+Copyright 2026 the authors of this repository
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+web/ uses @optimizely/cms-sdk and @optimizely/cms-cli (https://github.com/episerver/content-js-sdk),
+licensed under the Apache License, Version 2.0.

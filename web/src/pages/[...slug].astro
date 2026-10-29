@@ -1,0 +1,28 @@
+---
+import { resolveContentComponent } from '@optimizely/cms-sdk/core';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { registry } from '@/lib/astroRegistry';
+import { initOptimizely, getClient } from '@/lib/optimizely';
+import { absolutizeMedia } from '@/lib/media';
+
+export const prerender = false;
+
+initOptimizely();
+
+const uncached = (res: Response) => { if (Astro.cache?.enabled) Astro.cache.set(false); return res; };
+
+if (Astro.request.method !== 'GET' && Astro.request.method !== 'HEAD') {
+  return uncached(new Response(null, { status: 405, headers: { Allow: 'GET, HEAD' } }));
+}
+
+const { slug } = Astro.params;
+const [content] = await getClient().getContentByPath(slug ? `/${slug}/` : '/');
+if (!content) return uncached(new Response(null, { status: 404 }));
+absolutizeMedia(content);
+
+const page = resolveContentComponent(content, { registry });
+const Page = page.component as any;
+---
+<BaseLayout title={content._metadata?.displayName ?? undefined} lang={content._metadata?.locale ?? 'en'}>
+  {Page ? <Page content={page.contentProps} /> : null}
+</BaseLayout>

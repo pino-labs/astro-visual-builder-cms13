@@ -1,0 +1,20 @@
+---
+import type { ContentProps } from '@optimizely/cms-sdk';
+import { getPreviewUtils } from '@optimizely/cms-sdk/core';
+import type { LandingExperienceContentType } from '@/lib/contentTypes';
+import OptimizelyComposition from './OptimizelyComposition.astro';
+
+interface Props { content: ContentProps<typeof LandingExperienceContentType> }
+const { content } = Astro.props;
+const { pa, src } = getPreviewUtils(content);
+---
+<main>
+  {content.hero && (
+    <header class={`hero hero--${content.hero.theme ?? 'light'}`} {...pa('hero')}>
+      {src(content.hero.background) && <img src={src(content.hero.background)} alt="" {...pa('hero.background')} />}
+      <h1 {...pa('hero.heading')}>{content.hero.heading}</h1>
+      <p {...pa('hero.summary')}>{content.hero.summary}</p>
+    </header>
+  )}
+  <OptimizelyComposition nodes={(content.composition?.nodes ?? []) as any} />
+</main>

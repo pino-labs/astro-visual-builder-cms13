@@ -1,0 +1,28 @@
+---
+import { resolveContentComponent, type GridRenderItem } from '@optimizely/cms-sdk/core';
+import { registry } from '@/lib/astroRegistry';
+
+interface Props { items: GridRenderItem<unknown>[] }
+const { items } = Astro.props;
+---
+{items.map((item) => {
+  if (item.kind === 'structure') {
+    const settings = item.displaySettings ?? {};
+    const cls = item.nodeType === 'row'
+      ? `row row--${settings.padding ?? 'medium'}`
+      : `column column--${settings.background ?? 'neutral'}`;
+    return (
+      <div class={cls} {...(item.previewAttrs ?? {})}>
+        <Astro.self items={item.children} />
+      </div>
+    );
+  }
+  const r = resolveContentComponent(item.content, { tag: item.tag, registry });
+  if (!r.component) return null;
+  const Component = r.component as any;
+  return (
+    <div {...(item.previewAttrs ?? {})}>
+      <Component content={r.contentProps} displaySettings={item.displaySettings} />
+    </div>
+  );
+})}

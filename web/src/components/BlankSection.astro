@@ -1,0 +1,12 @@
+---
+import { planGridSection, getPreviewUtils } from '@optimizely/cms-sdk/core';
+import GridItems from './GridItems.astro';
+import { registry } from '@/lib/astroRegistry';
+
+const { content } = Astro.props;
+const { pa } = getPreviewUtils(content);
+const items = planGridSection(content.nodes ?? [], { registry });
+---
+<section class="section" {...pa(content)}>
+  <GridItems items={items} />
+</section>

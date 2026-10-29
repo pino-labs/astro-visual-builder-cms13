@@ -1,0 +1,21 @@
+---
+import type { ContentProps } from '@optimizely/cms-sdk';
+import { getPreviewUtils } from '@optimizely/cms-sdk/core';
+import { RichText } from '@optimizely/cms-sdk/react/richText';
+import type { ArticlePageContentType } from '@/lib/contentTypes';
+
+interface Props { content: ContentProps<typeof ArticlePageContentType> }
+const { content } = Astro.props;
+const { pa, src } = getPreviewUtils(content);
+const cover = src(content.cover);
+---
+<main>
+  <article>
+    {cover && <img src={cover} alt="" {...pa('cover')} />}
+    <h1 {...pa('heading')}>{content.heading}</h1>
+    {content.publishedAt && <time datetime={content.publishedAt}>{new Date(content.publishedAt).toLocaleDateString('en-GB')}</time>}
+    <div {...pa('body')}>
+      <RichText content={content.body?.json} />
+    </div>
+  </article>
+</main>

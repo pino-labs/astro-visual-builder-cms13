@@ -1,0 +1,42 @@
+{
+  "name": "astro-cms13-paas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.23.4 || ^24.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "start": "node ./dist/server/entry.mjs",
+    "check": "astro check",
+    "test": "node --test test/*.test.mjs",
+    "checks": "bash test/checks.sh",
+    "opti-push": "optimizely-cms-cli config push optimizely.config.mjs",
+    "deploy": "optimizely-cms-cli deploy",
+    "webhook:register": "node scripts/register-webhook.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "11.1.9",
+    "@astrojs/react": "7.1.1",
+    "@astrojs/svelte": "9.1.1",
+    "@azure/identity": "^4",
+    "@optimizely/cms-sdk": "3.1.0-beta.0",
+    "@redis/entraid": "^5",
+    "astro": "7.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "redis": "^5",
+    "svelte": "5.57.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "*",
+    "@optimizely/cms-cli": "3.1.0-beta.0",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5",
+    "vite-plugin-mkcert": "^2.1.0"
+  }
+}

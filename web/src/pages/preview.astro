@@ -1,0 +1,44 @@
+---
+import type { PreviewParams } from '@optimizely/cms-sdk';
+import { resolveContentComponent } from '@optimizely/cms-sdk/core';
+import { OPTIMIZELY_CMS_URL } from 'astro:env/server';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { registry } from '@/lib/astroRegistry';
+import { initOptimizely, getClient } from '@/lib/optimizely';
+import { absolutizeMedia } from '@/lib/media';
+
+export const prerender = false;
+initOptimizely();
+
+if (Astro.cache?.enabled) Astro.cache.set(false);
+const cmsOrigin = new URL(OPTIMIZELY_CMS_URL).origin;
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+Astro.response.headers.set('Content-Security-Policy', `frame-ancestors ${cmsOrigin}`);
+Astro.response.headers.set('X-Robots-Tag', 'noindex');
+
+const params = Object.fromEntries(Astro.url.searchParams.entries()) as unknown as PreviewParams;
+let content: any;
+try {
+  content = await getClient().getPreviewContent(params);
+} catch (e) {
+  console.warn('[preview]', (e as Error).message);
+  return new Response('Preview unavailable', {
+    status: 401,
+    headers: { 'Cache-Control': 'private, no-store', 'X-Robots-Tag': 'noindex' },
+  });
+}
+absolutizeMedia(content);
+const page = resolveContentComponent(content, { registry });
+const Page = page.component as any;
+const injector = new URL('/util/javascript/communicationinjector.js', cmsOrigin).href;
+---
+<BaseLayout title={content._metadata?.displayName ?? 'Preview'}>
+  <script is:inline src={injector}></script>
+  <script>
+    // Reload the frame with the fresh preview URL (and token) when an editor saves. Astro has no
+    // router.refresh(), so a full reload is the refresh. Plain script: no framework runtime on this page.
+    import { createContentSavedListener } from '@optimizely/cms-sdk/core';
+    createContentSavedListener().start();
+  </script>
+  {Page ? <Page content={page.contentProps} /> : null}
+</BaseLayout>
